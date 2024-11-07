@@ -6,6 +6,7 @@ from imblearn.over_sampling import SMOTE
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.preprocessing import StandardScaler
 
 # Define the column names based on the dataset documentation
 column_names = [
@@ -82,6 +83,11 @@ X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
 print("Original training set size:", y_train.value_counts())
 print("Resampled training set size:", y_train_resampled.value_counts())
 
+# Scale the features (optional but recommended for certain models)
+scaler = StandardScaler()
+X_train_resampled = scaler.fit_transform(X_train_resampled)
+X_test_scaled = scaler.transform(X_test)
+
 # Initialize the Gradient Boosting model
 gb_model = GradientBoostingClassifier(random_state=42)
 
@@ -107,7 +113,7 @@ print("Best parameters for Gradient Boosting found:", best_params_gb)
 best_gb_model = grid_search_gb.best_estimator_
 
 # Make predictions on the original test set
-y_pred_gb = best_gb_model.predict(X_test)
+y_pred_gb = best_gb_model.predict(X_test_scaled)
 
 # Evaluate the Gradient Boosting model
 print("Gradient Boosting Confusion Matrix:")
