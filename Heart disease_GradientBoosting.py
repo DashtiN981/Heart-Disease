@@ -1,4 +1,11 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from imblearn.over_sampling import SMOTE
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import classification_report, confusion_matrix
 
 # Define the column names based on the dataset documentation
 column_names = [
@@ -16,14 +23,11 @@ print(df.head())
 # Check for missing values
 print(df.isnull().sum())
 
-
 # Replace any non-numeric values with NaN
 df['ca'] = pd.to_numeric(df['ca'], errors='coerce')
 df['thal'] = pd.to_numeric(df['thal'], errors='coerce')
 
-#print(df.isnull().sum())
-
-# Now fill missing values in 'ca' and 'thal' with their respective medians
+# Fill missing values in 'ca' and 'thal' with their respective medians
 df['ca'].fillna(df['ca'].median(), inplace=True)
 df['thal'].fillna(df['thal'].median(), inplace=True)
 
@@ -31,27 +35,21 @@ df['thal'].fillna(df['thal'].median(), inplace=True)
 missing_values = df[['ca', 'thal']].isnull().sum()
 print(missing_values)
 
-
 # View summary statistics
 print(df.describe())
 
 # Check target distribution
 print(df['target'].value_counts())
 
-import matplotlib.pyplot as plt
-
 # Plot distributions for each feature
 df.hist(bins=20, figsize=(15, 10))
-#plt.show()
-
-import seaborn as sns
+plt.show()
 
 # Display correlation matrix
 plt.figure(figsize=(12, 8))
 sns.heatmap(df.corr(), annot=True, cmap="coolwarm", fmt=".2f")
 plt.title("Correlation Matrix")
-#plt.show()
-
+plt.show()
 
 # Set a correlation threshold
 correlation_threshold = 0.2
@@ -62,8 +60,6 @@ correlated_features = df.corr()['target'][df.corr()['target'].abs() > correlatio
 # Print the selected features
 print("Selected features based on correlation with target:")
 print(correlated_features)
-
-from sklearn.model_selection import train_test_split
 
 # Define features (X) and target (y)
 X = df[correlated_features[:-1]]  # All features except 'target'
@@ -76,8 +72,6 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 print("Training set shape:", X_train.shape, y_train.shape)
 print("Testing set shape:", X_test.shape, y_test.shape)
 
-from imblearn.over_sampling import SMOTE
-
 # Initialize SMOTE
 smote = SMOTE(random_state=42)
 
@@ -87,16 +81,6 @@ X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
 # Check the distribution of the target variable after resampling
 print("Original training set size:", y_train.value_counts())
 print("Resampled training set size:", y_train_resampled.value_counts())
-
-"""from sklearn.preprocessing import StandardScaler
-
-# Scale the features
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X_train)"""
-
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import classification_report, confusion_matrix
 
 # Initialize the Gradient Boosting model
 gb_model = GradientBoostingClassifier(random_state=42)
