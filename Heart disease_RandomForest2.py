@@ -119,7 +119,7 @@ grid_search.fit(X_train_resampled, y_train_resampled)
 best_params = grid_search.best_params_
 print("Best parameters found:", best_params)
 
-# Train the best model on the resampled data
+# Train the best model on the resampled data ***********
 best_rf_model = grid_search.best_estimator_
 
 # Make predictions on the original test set
